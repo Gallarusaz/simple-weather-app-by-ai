@@ -1,6 +1,7 @@
 // Constants
 const API_KEY = '52271b3189365a01612f4b7264d6499e'; // Your API key
 const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const COUNTRIES_API_URL = 'https://restcountries.com/v3.1/alpha/';
 
 // DOM Elements
 const searchInput = document.querySelector('.search-input');
@@ -8,16 +9,21 @@ const searchButton = document.querySelector('.search-button');
 const weatherContainer = document.querySelector('.weather-container');
 const weatherIcon = document.querySelector('.weather-icon');
 const cityName = document.querySelector('.city-name');
+const countryName = document.querySelector('.country-name');
+const dateTime = document.querySelector('.date-time');
 const temperature = document.querySelector('.temperature');
 const description = document.querySelector('.description');
 const tempButtons = document.querySelectorAll('.temp-button');
 const aiAdvice = document.querySelector('.ai-advice');
+const humidityValue = document.querySelector('.humidity-value');
+const windValue = document.querySelector('.wind-value');
 const errorMessage = document.querySelector('.error-message');
 const spinner = document.querySelector('.spinner');
 
 // Variables
 let currentTempInKelvin = 0;
 let currentTempUnit = 'celsius';
+let countryCache = {}; // Cache for country data
 
 // Event Listeners
 searchButton.addEventListener('click', handleSearch);
@@ -56,7 +62,7 @@ async function fetchWeatherData(city) {
         }
 
         const data = await response.json();
-        displayWeatherData(data);
+        await displayWeatherData(data);
     } catch (error) {
         showError(error.message === 'city not found' 
             ? 'City not found. Please check the spelling and try again.' 
@@ -67,12 +73,16 @@ async function fetchWeatherData(city) {
     }
 }
 
-function displayWeatherData(data) {
+async function displayWeatherData(data) {
     // Store temperature value for unit conversion
     currentTempInKelvin = data.main.temp + 273.15;
 
     // Set city name
     cityName.textContent = data.name;
+    
+    // Get and set full country name using REST Countries API
+    const countryCode = data.sys.country;
+    await setCountryName(countryCode);
 
     // Set weather icon
     const iconCode = data.weather[0].icon;
@@ -82,14 +92,68 @@ function displayWeatherData(data) {
     // Set weather description
     description.textContent = data.weather[0].description;
 
+    // Set date and time in the specified format
+    setLocalDateTime();
+
     // Set temperature based on current unit
     updateTemperatureDisplay();
 
     // Generate and set AI advice
     aiAdvice.textContent = generateWeatherAdvice(data.main.temp, data.weather[0].main);
 
+    // Set humidity and wind values
+    humidityValue.textContent = `${data.main.humidity}%`;
+    windValue.textContent = `${data.wind.speed} m/s`;
+
     // Show weather container
     showWeatherContainer();
+}
+
+async function setCountryName(countryCode) {
+    // Check if we have this country in the cache
+    if (countryCache[countryCode]) {
+        countryName.textContent = countryCache[countryCode];
+        return;
+    }
+
+    try {
+        // Fetch country data from REST Countries API
+        const response = await fetch(`${COUNTRIES_API_URL}${countryCode}`);
+        
+        if (response.ok) {
+            const countryData = await response.json();
+            const fullCountryName = countryData[0].name.common;
+            
+            // Update the DOM
+            countryName.textContent = fullCountryName;
+            
+            // Save to cache
+            countryCache[countryCode] = fullCountryName;
+        } else {
+            // Fallback to country code if API call fails
+            countryName.textContent = countryCode;
+        }
+    } catch (error) {
+        // Fallback to country code
+        countryName.textContent = countryCode;
+        console.error('Error fetching country data:', error);
+    }
+}
+
+function setLocalDateTime() {
+    const now = new Date();
+    
+    // Format: Month, day, day of week, time (HH:MM)
+    const options = { 
+        month: 'long', 
+        day: 'numeric', 
+        weekday: 'long',
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false
+    };
+    
+    dateTime.textContent = now.toLocaleDateString('en-US', options);
 }
 
 function updateTemperatureDisplay() {

@@ -116,15 +116,34 @@ body {
     height: 70px;
 }
 
+.location-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .city-name {
     font-size: 2rem;
     font-weight: 600;
+    line-height: 1.2;
+}
+
+.country-name {
+    font-size: 1rem;
+    color: #718096;
+    font-weight: 400;
 }
 
 .temperature {
     font-size: 3rem;
     font-weight: 700;
-    margin: 10px 0;
+    margin: 10px 0 5px;
+}
+
+.date-time {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 10px;
 }
 
 .description {
@@ -164,6 +183,34 @@ body {
     border-radius: 12px;
     margin-top: 15px;
     font-style: italic;
+}
+
+/* Additional info section */
+.additional-info {
+    margin-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.humidity-info, .wind-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 5px;
+}
+
+.humidity-value, .wind-value {
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
 /* Error message */

@@ -26,15 +26,29 @@
         <div class="weather-container">
             <div class="weather-header">
                 <img src="" alt="Weather icon" class="weather-icon">
-                <h2 class="city-name"></h2>
+                <div class="location-info">
+                    <h2 class="city-name"></h2>
+                    <span class="country-name"></span>
+                </div>
             </div>
             <div class="temperature"></div>
+            <div class="date-time"></div>
             <div class="description"></div>
             <div class="temp-toggle">
                 <button class="temp-button active" data-temp="celsius" aria-label="Celsius">°C</button>
                 <button class="temp-button" data-temp="fahrenheit" aria-label="Fahrenheit">°F</button>
             </div>
             <div class="ai-advice"></div>
+            <div class="additional-info">
+                <div class="humidity-info">
+                    <span class="info-label">Humidity:</span>
+                    <span class="humidity-value"></span>
+                </div>
+                <div class="wind-info">
+                    <span class="info-label">Wind Speed:</span>
+                    <span class="wind-value"></span>
+                </div>
+            </div>
         </div>
     </div>
 
